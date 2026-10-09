@@ -1,0 +1,434 @@
+{
+  "uid": "adas-release-validation",
+  "title": "ADAS ECU | Release verification & defects",
+  "schemaVersion": 39,
+  "version": 1,
+  "tags": [
+    "ADAS",
+    "HIL",
+    "traceability"
+  ],
+  "refresh": "15s",
+  "time": {
+    "from": "now-24h",
+    "to": "now"
+  },
+  "panels": [
+    {
+      "id": 1,
+      "title": "Test verdicts by software release",
+      "type": "bargauge",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "adas-prometheus"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 0
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum by (release,verdict) (adas_test_cases{release=~\"$release\",mode=~\"$mode\"})",
+          "legendFormat": "{{release}} \u00b7 {{verdict}}",
+          "instant": true
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "color": {
+            "mode": "palette-classic"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "orientation": "horizontal",
+        "displayMode": "gradient",
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom"
+        }
+      }
+    },
+    {
+      "id": 2,
+      "title": "Pass rate by software release",
+      "type": "bargauge",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "adas-prometheus"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 0
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "100 * sum by (release) (adas_test_cases{verdict=\"PASS\",release=~\"$release\",mode=~\"$mode\"}) / sum by (release) (adas_test_cases{release=~\"$release\",mode=~\"$mode\"})",
+          "legendFormat": "{{release}}",
+          "instant": true
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "color": {
+            "mode": "palette-classic"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "orientation": "horizontal",
+        "displayMode": "gradient",
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom"
+        }
+      }
+    },
+    {
+      "id": 3,
+      "title": "Unique bugs reported (Affects Version)",
+      "type": "bargauge",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "adas-prometheus"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 8
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "adas_bugs_reported{release=~\"$release\",source=~\"$source\"}",
+          "legendFormat": "{{release}} \u00b7 {{source}}",
+          "instant": true
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "color": {
+            "mode": "palette-classic"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "orientation": "horizontal",
+        "displayMode": "gradient",
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom"
+        }
+      }
+    },
+    {
+      "id": 4,
+      "title": "Bugs by severity and lifecycle category",
+      "type": "bargauge",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "adas-prometheus"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 8
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "adas_bugs{release=~\"$release\",source=~\"$source\"}",
+          "legendFormat": "{{release}} \u00b7 {{severity}} \u00b7 {{status}}",
+          "instant": true
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "color": {
+            "mode": "palette-classic"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "orientation": "horizontal",
+        "displayMode": "gradient",
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom"
+        }
+      }
+    },
+    {
+      "id": 5,
+      "title": "Verified requirement coverage",
+      "type": "bargauge",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "adas-prometheus"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 16
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "100 * adas_requirement_verified{release=~\"$release\",mode=~\"$mode\"} / adas_requirement_total{release=~\"$release\",mode=~\"$mode\"}",
+          "legendFormat": "{{release}}",
+          "instant": true
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "color": {
+            "mode": "palette-classic"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "orientation": "horizontal",
+        "displayMode": "gradient",
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom"
+        }
+      }
+    },
+    {
+      "id": 6,
+      "title": "Executed requirement coverage",
+      "type": "bargauge",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "adas-prometheus"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 16
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "100 * adas_requirement_covered{release=~\"$release\",mode=~\"$mode\"} / adas_requirement_total{release=~\"$release\",mode=~\"$mode\"}",
+          "legendFormat": "{{release}}",
+          "instant": true
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "color": {
+            "mode": "palette-classic"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "orientation": "horizontal",
+        "displayMode": "gradient",
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom"
+        }
+      }
+    },
+    {
+      "id": 7,
+      "title": "Full regression (1=yes; 0=subset)",
+      "type": "bargauge",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "adas-prometheus"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 24
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "adas_full_regression{release=~\"$release\",mode=~\"$mode\"}",
+          "legendFormat": "{{release}}",
+          "instant": true
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "color": {
+            "mode": "palette-classic"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "orientation": "horizontal",
+        "displayMode": "gradient",
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom"
+        }
+      }
+    },
+    {
+      "id": 8,
+      "title": "Reported bugs over collection time",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "adas-prometheus"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 24
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "adas_bugs_reported{release=~\"$release\",source=~\"$source\"}",
+          "legendFormat": "{{release}} \u00b7 {{source}}",
+          "instant": false
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "color": {
+            "mode": "palette-classic"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "orientation": "horizontal",
+        "displayMode": "gradient",
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom"
+        }
+      }
+    }
+  ],
+  "templating": {
+    "list": [
+      {
+        "name": "release",
+        "type": "query",
+        "datasource": {
+          "type": "prometheus",
+          "uid": "adas-prometheus"
+        },
+        "query": "label_values(adas_test_cases, release)",
+        "includeAll": true,
+        "allValue": ".*",
+        "multi": true,
+        "current": {
+          "text": "All",
+          "value": "$__all"
+        },
+        "refresh": 1
+      },
+      {
+        "name": "mode",
+        "type": "custom",
+        "query": "demo,replay",
+        "current": {
+          "text": "demo",
+          "value": "demo"
+        }
+      },
+      {
+        "name": "source",
+        "type": "custom",
+        "query": "demo,jira",
+        "current": {
+          "text": "demo",
+          "value": "demo"
+        }
+      }
+    ]
+  },
+  "description": "Synthetic data is labelled demo. Jira bug counts use unique issue keys and Affects Version, not failed-test counts. Coverage is requirements coverage, not code/MC/DC coverage."
+}
