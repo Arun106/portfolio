@@ -1,0 +1,16 @@
+VERSION "Synthetic ADAS demonstration interface v1"
+NS_ :
+BS_:
+BU_: HIL ECU
+BO_ 256 Scene: 8 HIL
+ SG_ Speed : 0|16@1+ (0.01,0) [0|200] "km/h" ECU
+ SG_ TTC : 16|16@1+ (0.001,0) [0|65] "s" ECU
+ SG_ Valid : 32|8@1+ (1,0) [0|1] "" ECU
+ SG_ Override : 40|8@1+ (1,0) [0|1] "" ECU
+ SG_ Enabled : 48|8@1+ (1,0) [0|1] "" ECU
+ SG_ Fault : 56|8@1+ (1,0) [0|1] "" ECU
+BO_ 512 Output: 8 ECU
+ SG_ Brake : 0|8@1+ (1,0) [0|1] "" HIL
+ SG_ Warning : 8|8@1+ (1,0) [0|1] "" HIL
+ SG_ State : 16|8@1+ (1,0) [0|2] "" HIL
+ SG_ Counter : 24|8@1+ (1,0) [0|255] "" HIL
