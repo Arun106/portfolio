@@ -36,6 +36,8 @@ def evaluate(case, folder):
             latency=0
         else:
             window = [(t,s[signal]) for t,s in outputs if t>=start]
+            if signal=="Brake" and expected==0 and case["scenario"] not in ("override","clear"):
+                assert all(v==0 for _,v in window), "unintended brake request during inhibited scenario"
             match = next((t for t,v in window if v==expected),None)
             assert match is not None, f"{signal} never reached {expected}"
             latency = round((match-start)*1000,3)
