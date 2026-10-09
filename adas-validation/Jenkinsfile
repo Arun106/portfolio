@@ -1,0 +1,88 @@
+// Set the SCM script path to adas-validation/Jenkinsfile.
+pipeline {
+  agent { label 'azure-docker-agent' }
+  options { timestamps(); skipDefaultCheckout(true); disableConcurrentBuilds(); timeout(time: 45, unit: 'MINUTES') }
+  parameters {
+    choice(name: 'MODE', choices: ['demo', 'hil'], description: 'Demo is synthetic; HIL requires configured vendor adapters')
+    string(name: 'RELEASE', defaultValue: 'R1.0')
+    string(name: 'JIRA_SUITE', defaultValue: '', description: 'Optional Jira suite issue with links to mapped Test issues')
+    string(name: 'JIRA_PROJECT', defaultValue: 'ADAS')
+    booleanParam(name: 'JIRA_REPORTING', defaultValue: false)
+  }
+  stages {
+    stage('Checkout') { steps { checkout scm } }
+    stage('Prepare & verify test logic') {
+      steps { dir('adas-validation') {
+        sh 'python3 -m venv .venv'
+        sh '.venv/bin/pip install -r requirements.txt'
+        sh '.venv/bin/python -m pytest tests -q --junitxml=artifacts/framework-unit.xml'
+      } }
+    }
+    stage('Select Jira suite') {
+      when { expression { params.JIRA_SUITE.trim() != '' } }
+      steps { dir('adas-validation') {
+        withCredentials([string(credentialsId: 'adas-jira-url', variable: 'JIRA_URL'), usernamePassword(credentialsId: 'adas-jira', usernameVariable: 'JIRA_EMAIL', passwordVariable: 'JIRA_TOKEN')]) {
+          sh '.venv/bin/python -m framework.jira suite --key "$JIRA_SUITE" --out artifacts/selected-suite.json'
+        }
+      } }
+    }
+    stage('Build / flash / execute / capture') {
+      steps { dir('adas-validation') {
+        script {
+          if (params.MODE == 'hil') {
+            // Lock covers setup, flashing, capture, and teardown across ALL jobs.
+            lock(resource: 'adas-hil-bench-01') {
+              sh '.venv/bin/python -m framework.hardware --release "$RELEASE"'
+            }
+          } else {
+            echo 'Synthetic ECU model selected. No ECU was flashed.'
+          }
+        }
+      } }
+    }
+    stage('Evaluate regression evidence') {
+      steps { dir('adas-validation') {
+        script {
+          int status = sh(returnStatus: true, script: '''
+            if [ "$MODE" = "hil" ]; then
+              set -- --mode replay --capture-root artifacts/hil-captures
+            else
+              set -- --mode demo
+            fi
+            if [ -n "$JIRA_SUITE" ]; then
+              set -- "$@" --suite-file artifacts/selected-suite.json
+            fi
+            .venv/bin/python -m framework.run --release "$RELEASE" "$@"
+          ''')
+          env.ADAS_VERDICT_STATUS = status.toString()
+          if (status != 0) { currentBuild.result = 'FAILURE' }
+        }
+      } }
+    }
+    stage('Jira defect snapshot') {
+      when { expression { params.JIRA_REPORTING } }
+      steps { dir('adas-validation') {
+        withCredentials([string(credentialsId: 'adas-jira-url', variable: 'JIRA_URL'), usernamePassword(credentialsId: 'adas-jira', usernameVariable: 'JIRA_EMAIL', passwordVariable: 'JIRA_TOKEN')]) {
+          sh '.venv/bin/python -m framework.jira bugs --project "$JIRA_PROJECT" --release "$RELEASE" --out "artifacts/bugs/$RELEASE.json"'
+        }
+      } }
+    }
+    stage('Publish reporting data') {
+      steps { dir('adas-validation') {
+        // A persistent mounted metrics volume is provided by the operator.
+        sh '.venv/bin/python -m framework.publish --destination /srv/adas/artifacts'
+      } }
+    }
+    stage('Release gate') {
+      steps { script {
+        if (env.ADAS_VERDICT_STATUS != '0') { error('ADAS evidence gate failed. Inspect archived traceability and logs.') }
+      } }
+    }
+  }
+  post {
+    always {
+      junit allowEmptyResults: false, testResults: 'adas-validation/artifacts/**/junit.xml,adas-validation/artifacts/framework-unit.xml'
+      archiveArtifacts artifacts: 'adas-validation/artifacts/**/*', fingerprint: true, allowEmptyArchive: true
+    }
+  }
+}
