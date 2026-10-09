@@ -51,6 +51,15 @@ def test_incorrect_stimulus_never_passes(tmp_path):
     write_blf(tmp_path/"capture.blf",rows)
     assert evaluate(case(),tmp_path)["verdict"]=="ERROR"
 
+def test_transient_unintended_braking_is_failure(tmp_path):
+    c=case("warning")
+    simulate(c,"R1.0",tmp_path)
+    rows=read_blf(tmp_path/"capture.blf")
+    for t,name,signals in rows:
+        if name=="Output" and t==.22:signals["Brake"]=1
+    write_blf(tmp_path/"capture.blf",rows)
+    assert evaluate(c,tmp_path)["verdict"]=="FAIL"
+
 def test_replay_manifest_binds_release_and_log_hash(tmp_path):
     from framework.capture_manifest import create
     root=tmp_path/"captures";folder=root/case()["test_id"];folder.mkdir(parents=True)
