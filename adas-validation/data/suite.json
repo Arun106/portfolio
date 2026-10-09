@@ -1,0 +1,27 @@
+{
+  "suite_key": "ADAS-1",
+  "test_ids": [
+    "ADAS-TC-001",
+    "ADAS-TC-002",
+    "ADAS-TC-003",
+    "ADAS-TC-004",
+    "ADAS-TC-005",
+    "ADAS-TC-006",
+    "ADAS-TC-007",
+    "ADAS-TC-008",
+    "ADAS-TC-009",
+    "ADAS-TC-010",
+    "ADAS-TC-011",
+    "ADAS-TC-012",
+    "ADAS-TC-013",
+    "ADAS-TC-014",
+    "ADAS-TC-015",
+    "ADAS-TC-016",
+    "ADAS-TC-017",
+    "ADAS-TC-018",
+    "ADAS-TC-019",
+    "ADAS-TC-020",
+    "ADAS-TC-021",
+    "ADAS-TC-022"
+  ]
+}
