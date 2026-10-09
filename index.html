@@ -53,4 +53,7 @@ let savedPortfolioLanguage;
 try { savedPortfolioLanguage = localStorage.getItem('portfolio-language'); } catch (_) {}
 setPortfolioLanguage(preferredPortfolioLanguage(savedPortfolioLanguage, navigator.languages && navigator.languages.length ? navigator.languages : [navigator.language]), false);
 document.getElementById('language-switch').addEventListener('change', event => setPortfolioLanguage(event.target.value, true));
+const iconStyle=document.createElement('style');iconStyle.textContent='.portfolio-icon-flow{margin-top:16px;color:#567b68;font-size:22px;letter-spacing:.16em;animation:portfolioIconFloat 2.4s ease-in-out infinite}@keyframes portfolioIconFloat{50%{transform:translateY(-3px)}}';document.head.appendChild(iconStyle);
+const labLink=document.querySelector('a[href="adas-validation/"]');
+if(labLink){const icons=document.createElement('div');icons.className='portfolio-icon-flow';icons.innerHTML='⌘  →  ⚙  →  ✓  →  ▶  →  ◉  →  ▥';labLink.appendChild(icons);}
 </script></body></html>
