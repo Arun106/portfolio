@@ -1,0 +1,6 @@
+global:
+  scrape_interval: 15s
+scrape_configs:
+  - job_name: adas_validation
+    static_configs:
+      - targets: ['exporter:8080']
