@@ -68,4 +68,43 @@ $('traceRows').addEventListener('click',e=>{const b=e.target.closest('[data-test
 $('release').onchange=()=>{current=data.releases.find(r=>r.release===$('release').value);reset();render()};$('search').oninput=render;$('play').onclick=play;$('reset').onclick=reset;
 $('bars').innerHTML=data.releases.map(r=>'<div class="barrow"><strong>'+r.release+'</strong><div class="bar"><div class="pass" style="width:'+r.verdicts.PASS/r.total*100+'%"></div><div class="failed" style="width:'+r.verdicts.FAIL/r.total*100+'%"></div></div><span class="small">'+r.verdicts.PASS+'/'+r.total+' passed</span></div>').join('');
 $('bugs').innerHTML='<table><thead><tr><th>Affects release</th><th>Unique bugs</th><th>Severity</th></tr></thead><tbody>'+data.releases.map(r=>'<tr><td>'+r.release+'</td><td>'+(r.release==='R1.1'?1:0)+'</td><td>'+(r.release==='R1.1'?'High':'—')+'</td></tr>').join('')+'</tbody></table>';render();
-</script></body></html>
+</script>
+<style>
+.ct-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}.ct-flow{background:#17232b;border:1px solid #41515b;border-radius:12px;padding:20px}.ct-flow h3{color:#bce676}.ct-node{border:1px solid #526674;border-radius:9px;padding:12px 14px;margin:7px 0;background:#24333d;color:#f0f4ed}.ct-node strong{display:block}.ct-node small{color:#bdcbd0}.ct-arrow{text-align:center;color:#bce676;font-size:21px;line-height:1.2}.ct-branch{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.ct-branch .ct-node{font-size:12px}.ct-status{font-size:12px;color:#a9b7bd}.ct-use{margin-top:20px}.ct-use td:first-child{font-weight:700}@media(max-width:850px){.ct-grid{grid-template-columns:1fr}.ct-branch{grid-template-columns:1fr}}
+</style>
+<section class="section" id="continuous-testing" aria-labelledby="ct-title">
+<div class="eyebrow">06 / continuous testing architecture</div>
+<h2 id="ct-title">From software-only SiL to real hardware HiL.</h2>
+<p>Two test architectures, one verification principle: stimulate the system, capture time-aligned evidence, evaluate requirements, and publish reproducible regression verdicts. The virtual ECU implementation described below is a planned extension; the existing ADAS regression demo uses synthetic ECU models and generated evidence.</p>
+<div class="ct-grid">
+<article class="ct-flow"><h3>Our project · Virtual ECU / SiL</h3>
+<div class="ct-node"><strong>Git commit / pull request</strong><small>Continuous integration trigger</small></div><div class="ct-arrow">↓</div>
+<div class="ct-node"><strong>GitHub Actions / Jenkins / Azure Pipelines</strong><small>Build C++ AUTOSAR-style BMS application</small></div><div class="ct-arrow">↓</div>
+<div class="ct-node"><strong>Virtual ECU process</strong><small>Application SWC → RTE-style interfaces → BSW-style CAN adapter</small></div><div class="ct-arrow">↕</div>
+<div class="ct-node"><strong>SocketCAN vcan0 + DBC</strong><small>Simulated sensor nodes, CAN messages, fault scenarios</small></div><div class="ct-arrow">↕</div>
+<div class="ct-node"><strong>Python pytest + python-can</strong><small>Functional, boundary, timeout and regression assertions</small></div><div class="ct-arrow">↓</div>
+<div class="ct-node"><strong>Evidence and release gate</strong><small>JUnit / HTML reports, captured frames, pass/fail verdict</small></div>
+<p class="ct-status">Status: proposed vECU implementation. Existing synthetic ADAS tests are separate and should not be described as a running C++ vECU.</p>
+</article>
+<article class="ct-flow"><h3>Industry · Physical ECU / HiL</h3>
+<div class="ct-node"><strong>CI orchestrator + test management</strong><small>Reserve bench, deploy approved test configuration</small></div><div class="ct-arrow">↓</div>
+<div class="ct-node"><strong>Test execution / communication</strong><small>CANoe + VN interface, or bench-native automation</small></div><div class="ct-arrow">↕</div>
+<div class="ct-node"><strong>Physical ECU under test</strong><small>Power supply, wiring harness, actual ECU software and I/O</small></div><div class="ct-arrow">↕</div>
+<div class="ct-branch">
+<div class="ct-node"><strong>Bus &amp; UDS</strong><small>CANoe + VN: restbus, diagnostics, timing</small></div>
+<div class="ct-node"><strong>Electrical faults</strong><small>Vector VT System: loads, open/short circuits</small></div>
+<div class="ct-node"><strong>Vehicle physics</strong><small>dSPACE SCALEXIO: deterministic plant model</small></div>
+</div><div class="ct-arrow">↓</div>
+<div class="ct-node"><strong>Capture + verdict + reporting</strong><small>Bus traces, diagnostic logs, fault evidence, requirements and JUnit reports</small></div>
+<p class="ct-status">Reference architecture only; not a claim that this portfolio controls a physical bench. These hardware options are selected per use case, not all required simultaneously.</p>
+</article>
+</div>
+<div class="ct-use scroll"><h3>Choose the hardware for the test purpose</h3><table><thead><tr><th>Testing purpose</th><th>Recommended setup</th><th>Example verification</th></tr></thead><tbody>
+<tr><td>Network and diagnostic validation</td><td>CANoe + VN + physical ECU</td><td>CAN message cycle time, UDS DTC response</td></tr>
+<tr><td>Electrical I/O and fault injection</td><td>CANoe + VT System + physical ECU</td><td>Sensor open circuit, load or short-circuit response</td></tr>
+<tr><td>Closed-loop dynamics / control</td><td>dSPACE SCALEXIO + physical ECU; CANoe optional for network observation</td><td>ABS wheel-slip response, control-loop behavior</td></tr>
+<tr><td>Early software regression</td><td>C++ vECU + virtual CAN + pytest</td><td>Fault threshold, timeout, recovery and CAN output</td></tr>
+</tbody></table></div>
+<p class="small">Continuous testing means running suitable tests on every relevant change and across scheduled regressions. CI servers orchestrate execution; deterministic hardware timing remains the responsibility of the real-time bench.</p>
+</section>
+</body></html>
