@@ -1,9 +1,8 @@
 {
   "project": "Thermal Controller — CI/CD & Virtual Target Verification",
   "evidence": [
-    {"file":"prometheus-query-troubleshooting.png","kind":"troubleshooting","caption":"Prometheus query investigation; not successful collection evidence.","source":"supplied capture"},
-    {"kind":"jenkins-build-11","caption":"Jenkins build #11 completed successfully; reports are inspectable in Jenkins.","source":"local Jenkins API, 2026-10-30","status":"verified"},
-    {"kind":"grafana-dashboards","caption":"Controller dashboards were imported into the local Grafana instance.","source":"Grafana API, 2026-10-30","status":"verified"},
+    {"file":"jenkins-build-11-success.png","kind":"jenkins-build-11","caption":"Authenticated browser capture of Jenkins build #11 completing successfully.","source":"local Jenkins, 2026-10-31","status":"verified"},
+    {"file":"grafana-controller-dashboard.png","kind":"grafana-dashboard","caption":"Browser capture of the live Controller dashboard after datasource repair, showing host and QEMU metrics.","source":"local Grafana, 2026-10-31","status":"verified"},
     {"kind":"qemu-simulation","caption":"Synthetic 96% snapshot published under target=qemu-simulation; it is not a real QEMU result.","source":"monitoring/push-simulation.py","status":"verified"}
   ]
 }
