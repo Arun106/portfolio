@@ -890,6 +890,44 @@
     <style>
       .focus-reel{padding:26px 0 18px}.focus-reel-head{display:flex;justify-content:space-between;align-items:end;gap:24px;margin-bottom:14px}.focus-reel-head p{margin:0;color:var(--muted);font-size:13px;max-width:520px}.focus-reel-title{font:700 11px/1 var(--sans);letter-spacing:.14em;color:var(--green)}.focus-reel-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.focus-card{position:relative;min-height:220px;overflow:hidden;padding:26px;border:1px solid var(--line);border-radius:20px;background:var(--white);text-decoration:none;transition:transform .2s ease,box-shadow .2s ease}.focus-card:hover{transform:translateY(-4px);box-shadow:0 16px 30px rgba(20,91,73,.14)}.focus-card:before{content:"";position:absolute;width:250px;height:250px;border-radius:50%;right:-100px;top:-120px;background:var(--mint)}.focus-card.release{background:linear-gradient(135deg,#143f35,#1f7059);border-color:#143f35;color:white}.focus-card.release:before{background:rgba(199,237,114,.17)}.focus-card>*{position:relative;z-index:1}.focus-card .role{display:block;font-size:11px;font-weight:800;letter-spacing:.12em;color:var(--green)}.focus-card.release .role{color:var(--accent)}.focus-card h2{max-width:390px;margin:13px 0 9px;font:32px/1.04 var(--serif);font-weight:400;letter-spacing:-.04em}.focus-card p{max-width:405px;margin:0;color:var(--muted);font-size:13px;line-height:1.58}.focus-card.release p{color:#d6e8de}.focus-card .card-foot{position:absolute;right:23px;bottom:22px;left:26px;display:flex;justify-content:space-between;align-items:center;gap:12px;font-size:12px;font-weight:750}.focus-card .tags{display:flex;flex-wrap:wrap;gap:5px}.focus-card .tags span{display:inline-flex;align-items:center;gap:5px;padding:5px 7px;border:1px solid #cbded3;border-radius:99px;background:#f5faf6;color:#315f4d;font-size:10px}.focus-card .tags img{width:14px;height:14px;object-fit:contain}.focus-card.release .tags span{border-color:rgba(255,255,255,.25);background:rgba(255,255,255,.1);color:#effaf4}.focus-card .arrow{font-size:20px}.principles{margin-top:14px;padding:16px 18px;border:1px solid var(--line);border-radius:16px;background:#fff}.principles-head{display:flex;justify-content:space-between;gap:16px;align-items:baseline}.principles-head h2{margin:0;font:22px var(--serif);font-weight:400}.principles-head span{color:var(--muted);font-size:11px}.principles-rail{display:flex;gap:8px;overflow-x:auto;scroll-snap-type:x mandatory;margin-top:12px;padding-bottom:4px}.principle{flex:0 0 164px;min-height:76px;scroll-snap-align:start;padding:11px;border:1px solid #d9e6df;border-radius:11px;background:linear-gradient(135deg,#f8fcf9,#eef6f0)}.principle b{display:block;color:var(--green);font-size:10px;letter-spacing:.1em}.principle span{display:block;margin-top:5px;font-size:12px;line-height:1.25}.focus-card:focus-visible{outline:3px solid var(--green);outline-offset:4px}@media(max-width:760px){.focus-reel{padding:18px 0 10px}.focus-reel-head{display:block}.focus-reel-head p{margin-top:9px}.focus-reel-grid{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:9px}.focus-card{min-width:86%;scroll-snap-align:start}.focus-card h2{font-size:29px}.principles{padding:15px}.principle{flex-basis:145px}}
     </style>
+    <style>
+      /* Draft: low-contrast engineering wallpaper + gentle card wave. */
+      body {
+        background-color: var(--paper);
+        background-image:
+          radial-gradient(circle at 12% 14%, rgba(199,237,114,.42) 0 4px, transparent 5px),
+          radial-gradient(circle at 81% 24%, rgba(37,153,197,.32) 0 5px, transparent 6px),
+          radial-gradient(ellipse at 16% 8%, rgba(143,212,166,.28), transparent 30rem),
+          radial-gradient(ellipse at 88% 38%, rgba(81,171,215,.20), transparent 32rem),
+          radial-gradient(ellipse at 46% 96%, rgba(199,237,114,.19), transparent 35rem);
+        background-size: 180px 180px, 240px 240px, auto, auto, auto;
+        background-attachment: fixed;
+        animation: wallpaperDrift 16s ease-in-out infinite alternate;
+      }
+      .journey article,.project,.azure-card,.focus-card,.principle,.stat,.recruiter-role {
+        animation: cardWave 3.2s cubic-bezier(.42,0,.34,1) infinite;
+      }
+      .journey article:nth-child(2n),.project:nth-child(2n),.azure-card:nth-child(2n),.focus-card:nth-child(2n),.principle:nth-child(2n),.stat:nth-child(2n) { animation-delay: -.8s }
+      .journey article:nth-child(3n),.project:nth-child(3n),.azure-card:nth-child(3n),.principle:nth-child(3n),.stat:nth-child(3n) { animation-delay: -1.6s }
+      .journey article:hover,.project:hover,.azure-card:hover,.focus-card:hover,.principle:hover,.stat:hover,.recruiter-role:hover { animation-play-state: paused; transform: translateY(-10px) scale(1.01) }
+      @keyframes wallpaperDrift { from { background-position: 0 0,100% 0,0 0,100% 0,50% 100% } to { background-position: 52px 34px,calc(100% - 48px) 42px,3rem 2rem,calc(100% - 3rem) 3rem,48% calc(100% - 3rem) } }
+      @keyframes cardWave { 0%,100% { transform: translateY(0) } 46% { transform: translateY(-12px) rotate(-.25deg) } 58% { transform: translateY(-8px) rotate(.18deg) } }
+      @media (prefers-reduced-motion: reduce) { body,.journey article,.project,.azure-card,.focus-card,.principle,.stat,.recruiter-role { animation: none!important } }
+    </style>
+    <style>
+      .profile-photo {
+        content: url("assets/arun-portrait.jpg");
+        object-position: center 18%;
+      }
+    </style>
+    <style>
+      .profile-card { min-height: 390px; }
+      .availability-chips { position:relative;z-index:2;display:flex;flex-wrap:wrap;gap:7px;margin-top:10px; }
+      .availability-chips span { padding:6px 9px;border:1px solid rgba(20,91,73,.2);border-radius:999px;background:rgba(255,255,255,.74);color:#214d3f;font-size:10px;font-weight:750;line-height:1.25; }
+      .availability-chips .status { border-color:#6d9c50;background:#e5f4bf;color:#234a2e; }
+      .availability-chips .status:before { content:"●";margin-right:5px;color:#5d963e;font-size:8px; }
+      @media (max-width:760px) { .profile-card { min-height: 330px; } .availability-chips span { font-size:9px; } }
+    </style>
   </head>
   <body>
     <header class="wrap nav">
@@ -954,9 +992,11 @@
             width="420"
             height="540"
           />
-          <div class="card-caption" data-i18n="11">
-            Hannover–Braunschweig–Göttingen–Wolfsburg  ·  Open to on-site,
-            hybrid, or remote
+          <div class="availability-chips" aria-label="Availability">
+            <span data-project-en="Germany · on-site, hybrid or remote" data-project-de="Deutschland · vor Ort, hybrid oder remote">Germany · on-site, hybrid or remote</span>
+            <span data-project-en="No visa sponsorship required in Germany" data-project-de="Kein Visa-Sponsoring in Deutschland erforderlich">No visa sponsorship required in Germany</span>
+            <span class="status" data-project-en="Active job seeker" data-project-de="Aktiv auf Jobsuche">Active job seeker</span>
+            <span class="status" data-project-en="Ready to start immediately" data-project-de="Ab sofort verfügbar">Ready to start immediately</span>
           </div>
         </aside>
       </section>
