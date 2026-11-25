@@ -18,6 +18,18 @@ pipeline {
         sh '.venv/bin/python -m pytest tests -q --junitxml=artifacts/framework-unit.xml'
       } }
     }
+    stage('Embedded Python regression labs') {
+      when { expression { params.MODE == 'demo' } }
+      steps { dir('adas-validation/python-labs') {
+        sh 'rm -rf reports logs'
+        sh 'python3 -m venv .venv && .venv/bin/pip install -r requirements.txt'
+        sh '.venv/bin/python run_all.py'
+      } }
+      post { always { dir('adas-validation/python-labs') {
+        junit testResults: 'reports/tc20_junit.xml', allowEmptyResults: true
+        archiveArtifacts artifacts: 'reports/*,logs/*', allowEmptyArchive: true
+      } } }
+    }
     stage('Select Jira suite') {
       when { expression { params.JIRA_SUITE.trim() != '' } }
       steps { dir('adas-validation') {

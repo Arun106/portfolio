@@ -1,0 +1,227 @@
+[
+  {
+    "n": 1,
+    "name": "tc01_ecu_connectivity",
+    "title": "ECU connectivity",
+    "req": "A simulated ECU shall answer a diagnostic probe; disconnected ECU is a communication error.",
+    "concept": "OOP, custom exceptions, logging, try/except",
+    "debug": "Break at probe(); inspect connected. Expected offline case must PASS.",
+    "exercise": "Add a malformed reply case and reject it separately."
+  },
+  {
+    "n": 2,
+    "name": "tc02_voltage",
+    "title": "ECU voltage boundary validation",
+    "req": "Measured voltage must be 9\u201316 V inclusive (example requirement).",
+    "concept": "Assertions, boundary values, explicit raise",
+    "debug": "Inspect 8.99 and 16.01; run with -O to see the guard.",
+    "exercise": "Add 9.01 and 15.99; deliberately change an expected outcome to see exit 1."
+  },
+  {
+    "n": 3,
+    "name": "tc03_can_range",
+    "title": "CAN signal range",
+    "req": "Decoded speed samples must be between 0 and 250 km/h.",
+    "concept": "Loops, dictionaries, assert",
+    "debug": "Inspect index and value in the loop; the error includes the failing sample.",
+    "exercise": "Add a missing-signal scenario and a dedicated exception."
+  },
+  {
+    "n": 4,
+    "name": "tc04_can_timeout",
+    "title": "CAN message timeout and retry",
+    "req": "Receive a frame within three simulated polling attempts.",
+    "concept": "Loops, timeout exceptions, debug logs",
+    "debug": "Inspect attempt and frame. No real clock is required for this deterministic exercise.",
+    "exercise": "Implement a real deadline with time.monotonic() for a mocked receiver."
+  },
+  {
+    "n": 5,
+    "name": "tc05_can_cycle",
+    "title": "CAN message cycle time",
+    "req": "Adjacent timestamps must be 100 ms apart with tolerance of 5 ms.",
+    "concept": "zip, list comprehension, statistics",
+    "debug": "Inspect intervals; average alone can hide a single late frame.",
+    "exercise": "Add minimum, maximum and jitter to the debug log."
+  },
+  {
+    "n": 6,
+    "name": "tc06_software_version",
+    "title": "Software version verification",
+    "req": "A release string must match MAJOR.MINOR.PATCH and the requested version.",
+    "concept": "Regex, strings, assertions",
+    "debug": "Inspect re.fullmatch result; match the whole string, not just a prefix.",
+    "exercise": "Support a release candidate suffix such as -rc1."
+  },
+  {
+    "n": 7,
+    "name": "tc07_flashing",
+    "title": "ECU flashing result",
+    "req": "A simulated flasher must exit zero and print an explicit success marker.",
+    "concept": "subprocess, timeout, exit code, regex",
+    "debug": "Inspect returncode, stdout and stderr. Do not trust a success string alone.",
+    "exercise": "Add a simulated subprocess timeout and handle TimeoutExpired."
+  },
+  {
+    "n": 8,
+    "name": "tc08_uds_response",
+    "title": "UDS response validation",
+    "req": "Simulated ReadDataByIdentifier F190 response must begin with 62 F1 90 and contain a 17-byte VIN.",
+    "concept": "bytes, hex, slicing, custom exception",
+    "debug": "Inspect response.hex(); distinguish negative response from malformed positive response.",
+    "exercise": "Add a negative response with NRC 0x31 and verify classification."
+  },
+  {
+    "n": 9,
+    "name": "tc09_dtc",
+    "title": "DTC verification",
+    "req": "Decoded active DTCs must contain no entries outside the example allowlist.",
+    "concept": "sets, dictionaries, difference",
+    "debug": "Inspect unexpected set; duplicates are deliberately collapsed.",
+    "exercise": "Distinguish active and stored DTC status."
+  },
+  {
+    "n": 10,
+    "name": "tc10_reset_recovery",
+    "title": "ECU reset and recovery",
+    "req": "After a simulated reset, ECU must become ready within 3 seconds.",
+    "concept": "state sequences, loop, timeout",
+    "debug": "Inspect simulated elapsed_ms; no physical reset is performed.",
+    "exercise": "Add a transient READY state and require two consecutive ready samples."
+  },
+  {
+    "n": 11,
+    "name": "tc11_vehicle_speed",
+    "title": "Vehicle speed tolerance",
+    "req": "Measured speed must stay within 2 km/h of reference for each aligned sample.",
+    "concept": "pandas, vectorized subtraction, Boolean masks",
+    "debug": "Inspect df.loc[bad]; missing values must not silently pass.",
+    "exercise": "Add timestamp alignment using merge_asof with an explicit tolerance."
+  },
+  {
+    "n": 12,
+    "name": "tc12_cluster_warning",
+    "title": "Instrument cluster warning indicator",
+    "req": "Example rule: seatbelt warning is ON when ignition is on and driver belt is unfastened.",
+    "concept": "Boolean logic, dictionaries, truth table",
+    "debug": "Compare expected vs observed; test every input combination.",
+    "exercise": "Add a separate warning rule for low fuel."
+  },
+  {
+    "n": 13,
+    "name": "tc13_dlt_log",
+    "title": "DLT text log error detection",
+    "req": "An exported plain-text log must contain no ERROR or FATAL entries.",
+    "concept": "File handling, regex, enumerate",
+    "debug": "Inspect matches with line numbers; this is not a binary DLT parser.",
+    "exercise": "Add an allowlist for a known benign error and log excluded lines."
+  },
+  {
+    "n": 14,
+    "name": "tc14_csv_signals",
+    "title": "BLF-exported CSV signal validation",
+    "req": "Exported CSV must contain monotonically increasing timestamps and voltage within limits.",
+    "concept": "pandas, CSV, schema checks",
+    "debug": "Inspect dtypes and df.loc[bad]; BLF decoding is outside this exercise.",
+    "exercise": "Add signal unit conversion and detect duplicated timestamps."
+  },
+  {
+    "n": 15,
+    "name": "tc15_startup_time",
+    "title": "ECU startup time",
+    "req": "Time from startup command to ready event must not exceed 1500 ms.",
+    "concept": "time.monotonic, mocking, assertions",
+    "debug": "Mocked monotonic clock avoids flaky sleeps. Inspect elapsed_ms.",
+    "exercise": "Test a missing ready event with a dedicated timeout exception."
+  },
+  {
+    "n": 16,
+    "name": "tc16_sensor_consistency",
+    "title": "Sensor data consistency",
+    "req": "Two synchronized sensor streams must differ by no more than 0.5 units.",
+    "concept": "zip, lengths, loops, assert",
+    "debug": "Check length before zip; zip otherwise silently truncates the longer list.",
+    "exercise": "Handle NaN and timestamp alignment explicitly."
+  },
+  {
+    "n": 17,
+    "name": "tc17_bench_health",
+    "title": "HiL test bench health check",
+    "req": "Power, network and CAN interface must all be available before test execution.",
+    "concept": "OOP, dataclass, custom exceptions, critical logs",
+    "debug": "Inspect unavailable components; distinguish infrastructure failure from DUT failure.",
+    "exercise": "Add a separate class for bench configuration and a retry policy."
+  },
+  {
+    "n": 18,
+    "name": "tc18_build",
+    "title": "Embedded build verification",
+    "req": "A simulated build must finish with exit zero and a build-success marker.",
+    "concept": "subprocess, stderr, return codes",
+    "debug": "Inspect stderr and returncode. This is a fake build, not a compiler invocation.",
+    "exercise": "Replace the fake process with your own local CMake project."
+  },
+  {
+    "n": 19,
+    "name": "tc19_jenkins_logs",
+    "title": "Jenkins failure classification",
+    "req": "A log analyser must identify example disk, compiler and timeout failures.",
+    "concept": "Regex, dictionary, file handling",
+    "debug": "Inspect rule order; first match wins. Unknown is not evidence of success.",
+    "exercise": "Support multiple matching categories and show evidence lines."
+  },
+  {
+    "n": 20,
+    "name": "tc20_pytest_regression",
+    "title": "Pytest parametrized regression",
+    "req": "Voltage validation shall accept inclusive limits and reject out-of-range inputs.",
+    "concept": "pytest fixtures, parametrization, pytest.raises, JUnit XML",
+    "debug": "Run python -m pytest -vv --pdb scripts/tc20_pytest_regression.py to debug a failure.",
+    "exercise": "Add a pytest fixture finalizer and an invalid-type test."
+  },
+  {
+    "n": 21,
+    "name": "tc21_configuration",
+    "title": "Test configuration validation",
+    "req": "Test configuration must contain ECU ID and a positive integer timeout.",
+    "concept": "JSON, dictionaries, type checks, custom exception",
+    "debug": "Inspect config and missing fields. bool is a subclass of int; use exact type.",
+    "exercise": "Add a schema version and validate allowed communication protocols."
+  },
+  {
+    "n": 22,
+    "name": "tc22_reporting",
+    "title": "Test report generation",
+    "req": "JSON and CSV reports must preserve each test ID and verdict.",
+    "concept": "JSON, CSV, file handling, round-trip assertions",
+    "debug": "Inspect reread rows; reject invalid verdict before writing.",
+    "exercise": "Add a pass-rate summary and ERROR verdict for infrastructure failures."
+  },
+  {
+    "n": 23,
+    "name": "tc23_resources",
+    "title": "CPU and memory resource limits",
+    "req": "Example bench thresholds: CPU <= 85%, RAM <= 90%.",
+    "concept": "psutil, mocking, threshold checks",
+    "debug": "Mock values are deterministic; live psutil measurements vary across machines.",
+    "exercise": "Record multiple samples and evaluate sustained utilization."
+  },
+  {
+    "n": 24,
+    "name": "tc24_network",
+    "title": "Network connectivity and latency",
+    "req": "A simulated endpoint must connect and respond within 100 ms.",
+    "concept": "socket, mocking, exceptions, latency",
+    "debug": "Inspect socket mock side effects; no real network or ECU is contacted.",
+    "exercise": "Use a local loopback service to measure actual connection latency."
+  },
+  {
+    "n": 25,
+    "name": "tc25_cleanup",
+    "title": "Test resource cleanup",
+    "req": "A simulated bench reservation must always be released, even when a test fails.",
+    "concept": "try/finally, context managers, mock, logging",
+    "debug": "Inspect release.call_count after the exception.",
+    "exercise": "Implement a context manager using contextlib.contextmanager."
+  }
+]
